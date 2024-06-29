@@ -13,7 +13,7 @@ namespace EcommercePersistence
 {
     public class DatabaseService : DbContext, IDatabaseService
     {
-        private readonly IConfiguration _configuration;
+        //private readonly IConfiguration _configuration;
 
         public DatabaseService()
         {
@@ -32,7 +32,7 @@ namespace EcommercePersistence
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            //var connectionString = _configuration.GetConnectionString("DefaultConnection");
 
             optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=LifeLmss;Username=postgres;Password=postgres;Include Error Detail=true");
         }
