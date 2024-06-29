@@ -19,32 +19,34 @@ public class LeaveRequestServiceService : ILeaveRequestService
         _emailSender = emailSender;
     }
 
-    public void CreateLeaveRequest(string employeeId, int leaveTypeId, DateTime startDate, DateTime endDate, string requestComments)
+    public void CreateLeaveRequest(LeaveRequestDTO leaveRequestDTO)
     {
         var employee = _unitOfWork.Repository<Employee>()
-            .GetById(x => x.Id == employeeId)
+            .GetById(x => x.Id == leaveRequestDTO.employeeId)
             .FirstOrDefault();
 
         var leaveType = _unitOfWork.Repository<LeaveType>()
-            .GetById(x => x.Id == leaveTypeId);
+            .GetById(x => x.Id == leaveRequestDTO.leaveTypeId);
 
         var allocation = _unitOfWork.Repository<LeaveAllocation>()
-            .GetByCondition(x => x.EmployeeId == employeeId && x.LeaveTypeId == leaveTypeId)
+            .GetByCondition(x => x.EmployeeId == leaveRequestDTO.employeeId && x.LeaveTypeId == leaveRequestDTO.leaveTypeId)
             .FirstOrDefault();
 
-        if (allocation == null || allocation.NumberOfDays < (endDate - startDate).Days)
+        if (allocation == null || allocation.NumberOfDays < (leaveRequestDTO.endDate - leaveRequestDTO.startDate).Days)
             throw new Exception("Insufficient Leave Days");
 
-        allocation.NumberOfDays -= (endDate - startDate).Days;
+        var daysOff = (leaveRequestDTO.endDate - leaveRequestDTO.startDate).Days;
+
+        allocation.NumberOfDays -= daysOff;
         
         var leaveRequest = new EcommerceDomain.LeaveRequests.LeaveRequest
         {
-            RequestingEmployeeId = employeeId,
-            LeaveTypeId = leaveTypeId,
-            StartDate = startDate,
-            EndDate = endDate,
+            RequestingEmployeeId = leaveRequestDTO.employeeId,
+            LeaveTypeId = leaveRequestDTO.leaveTypeId,
+            StartDate = leaveRequestDTO.startDate,
+            EndDate = leaveRequestDTO.endDate,
             DateRequested = DateTime.Now,
-            RequestComments = requestComments,
+            RequestComments = leaveRequestDTO.requestComments,
             Cancelled = false // maybe i should change
         };
         
@@ -59,12 +61,17 @@ public class LeaveRequestServiceService : ILeaveRequestService
         if (lead != null)
         {
             var emailBody = $"{employee.Firstname} {employee.Lastname} " +
-                            $"has requested {(endDate - startDate).Days} days off from " +
-                            $"{startDate.ToShortDateString()} to " +
-                            $"{endDate.ToShortDateString()}.";
+                            $"has requested {daysOff} days off from " +
+                            $"{leaveRequestDTO.startDate.ToShortDateString()} to " +
+                            $"{leaveRequestDTO.endDate.ToShortDateString()}.";
             //await _emailService.SendEmailAsync(lead.Email, "Leave Request", emailBody);
             
            // _emailSender.Send(lead.Email, "Leave Request", emailBody);
         }
+    }
+
+    public IEnumerable<LeaveRequest> GetLeaveRequests()
+    {
+        return _unitOfWork.Repository<LeaveRequest>().GetAll();
     }
 }

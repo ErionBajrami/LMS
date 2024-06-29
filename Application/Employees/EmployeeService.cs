@@ -13,7 +13,7 @@ namespace EcommerceApplication.Employees
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<List<Employee>> GetAllCustomers()
+        public async Task<List<Employee>> GetAllEmployees()
         {
             var customersList = await _unitOfWork.Repository<Employee>().GetAll().ToListAsync();
 

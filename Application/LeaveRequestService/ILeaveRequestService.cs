@@ -1,6 +1,10 @@
+using EcommerceApplication.LeaveRequestService;
+using EcommerceDomain.LeaveRequests;
+
 namespace EcommerceApplication.CreateLeaveRequest;
 
 public interface ILeaveRequestService
 {
-    void CreateLeaveRequest(string employeeId, int leaveTypeId, DateTime startDate, DateTime endDate, string requestComments);
+    IEnumerable<LeaveRequest> GetLeaveRequests();
+    void CreateLeaveRequest(LeaveRequestDTO leaveRequestDTO);
 }

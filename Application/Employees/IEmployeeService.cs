@@ -4,6 +4,6 @@ namespace EcommerceApplication.Employees
 {
     public interface IEmployeeService
     {
-        Task<List<Employee>> GetAllCustomers();
+        Task<List<Employee>> GetAllEmployees();
     }
 }
