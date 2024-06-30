@@ -67,17 +67,17 @@ public class LeaveRequestServiceService : ILeaveRequestService
         _unitOfWork.Repository<LeaveRequest>().Create(leaveRequest);
         _unitOfWork.Complete();
 
-        //var lead = _unitOfWork.Repository<Employee>().Equals(employee.ReportsTo)
+        var lead = _unitOfWork.Repository<Employee>().Equals(employee.ReportsTo)
 
-        //if (lead != null)
-        //{
-        //    var emailBody = $"{employee.Firstname} {employee.Lastname} " +
-        //                    $"has requested {daysOff} days off from " +
-        //                    $"{leaveRequestDTO.startDate.ToShortDateString()} to " +
-        //                    $"{leaveRequestDTO.endDate.ToShortDateString()}.";
+        if (lead != null)
+        {
+            var emailBody = $"{employee.Firstname} {employee.Lastname} " +
+                            $"has requested {daysOff} days off from " +
+                            $"{leaveRequestDTO.startDate.ToShortDateString()} to " +
+                            $"{leaveRequestDTO.endDate.ToShortDateString()}.";
 
-        //    _emailSender.Send(lead.Email, "Leave Request", emailBody);
-        //}
+            _emailSender.Send(lead.Email, "Leave Request", emailBody);
+        }
     }
 
     public IEnumerable<LeaveRequest> GetLeaveRequests()
