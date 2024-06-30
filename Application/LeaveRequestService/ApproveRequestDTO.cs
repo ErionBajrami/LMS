@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace EcommerceApplication.LeaveRequestService
 {
-    public interface ILeaveRequestApprovalService
+    public class ApproveLeaveRequestDto
     {
-        void ApproveRequest(int requestId, int approverId);
-        void DeclineRequest(int requestId);
+        public int RequestId { get; set; }
+        public int ApproverId { get; set; }
     }
 }

@@ -33,8 +33,8 @@ namespace EcommercePersistence.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("EmployeeId")
-                        .HasColumnType("text");
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("LeaveTypeId")
                         .HasColumnType("integer");
@@ -65,8 +65,8 @@ namespace EcommercePersistence.Migrations
                     b.Property<bool?>("Approved")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("ApprovedById")
-                        .HasColumnType("text");
+                    b.Property<int>("ApprovedById")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("Cancelled")
                         .HasColumnType("boolean");
@@ -86,8 +86,8 @@ namespace EcommercePersistence.Migrations
                     b.Property<string>("RequestComments")
                         .HasColumnType("text");
 
-                    b.Property<string>("RequestingEmployeeId")
-                        .HasColumnType("text");
+                    b.Property<int>("RequestingEmployeeId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
@@ -128,28 +128,28 @@ namespace EcommercePersistence.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2024, 6, 26, 22, 7, 16, 350, DateTimeKind.Utc).AddTicks(6960),
+                            DateCreated = new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9968),
                             DefaultDays = 0,
                             Name = "Annual"
                         },
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2024, 6, 26, 22, 7, 16, 350, DateTimeKind.Utc).AddTicks(6960),
+                            DateCreated = new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9969),
                             DefaultDays = 20,
                             Name = "Sick"
                         },
                         new
                         {
                             Id = 3,
-                            DateCreated = new DateTime(2024, 6, 26, 22, 7, 16, 350, DateTimeKind.Utc).AddTicks(6970),
+                            DateCreated = new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9970),
                             DefaultDays = 0,
                             Name = "Replacement"
                         },
                         new
                         {
                             Id = 4,
-                            DateCreated = new DateTime(2024, 6, 26, 22, 7, 16, 350, DateTimeKind.Utc).AddTicks(6970),
+                            DateCreated = new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9971),
                             DefaultDays = 10,
                             Name = "Unpaid"
                         });
@@ -157,8 +157,11 @@ namespace EcommercePersistence.Migrations
 
             modelBuilder.Entity("LMS.Domain.Employees.Employee", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("DateJoined")
                         .HasColumnType("timestamp with time zone");
@@ -188,7 +191,7 @@ namespace EcommercePersistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
+                            Id = 1,
                             DateJoined = new DateTime(2010, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 2, 0, 0, 0, 0, DateTimeKind.Utc),
                             Firstname = "John",
@@ -197,7 +200,7 @@ namespace EcommercePersistence.Migrations
                         },
                         new
                         {
-                            Id = "2",
+                            Id = 2,
                             DateJoined = new DateTime(2015, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 2, 0, 0, 0, 0, DateTimeKind.Utc),
                             Firstname = "Jane",
@@ -211,7 +214,9 @@ namespace EcommercePersistence.Migrations
                 {
                     b.HasOne("LMS.Domain.Employees.Employee", "Employee")
                         .WithMany()
-                        .HasForeignKey("EmployeeId");
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EcommerceDomain.LeaveTypes.LeaveType", "LeaveType")
                         .WithMany()
@@ -228,7 +233,9 @@ namespace EcommercePersistence.Migrations
                 {
                     b.HasOne("LMS.Domain.Employees.Employee", "ApprovedBy")
                         .WithMany()
-                        .HasForeignKey("ApprovedById");
+                        .HasForeignKey("ApprovedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EcommerceDomain.LeaveTypes.LeaveType", "LeaveType")
                         .WithMany()
@@ -238,7 +245,9 @@ namespace EcommercePersistence.Migrations
 
                     b.HasOne("LMS.Domain.Employees.Employee", "RequestingEmployee")
                         .WithMany()
-                        .HasForeignKey("RequestingEmployeeId");
+                        .HasForeignKey("RequestingEmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ApprovedBy");
 

@@ -17,7 +17,7 @@ namespace EcommerceApplication.LeaveRequestService
             _unitOfWork = unitOfWork;
         }
 
-        public void ApproveRequest(int requestId)
+        public void ApproveRequest(int requestId, int approverId)
         {
             var leaveRequest = _unitOfWork.Repository<LeaveRequest>()
                 .GetById(x => x.Id == requestId).FirstOrDefault();
@@ -26,6 +26,8 @@ namespace EcommerceApplication.LeaveRequestService
                 return;
 
             leaveRequest.Approved = true;
+            leaveRequest.ApprovedById = approverId;
+            leaveRequest.DateActioned = DateTime.UtcNow;
 
             _unitOfWork.Repository<LeaveRequest>().Update(leaveRequest);
             _unitOfWork.Complete();
@@ -39,7 +41,8 @@ namespace EcommerceApplication.LeaveRequestService
             if (leaveRequest == null)
                 return;
 
-            leaveRequest.Approved = false;
+            leaveRequest.Cancelled = true;
+            leaveRequest.DateActioned = DateTime.UtcNow;
 
             _unitOfWork.Repository<LeaveRequest>().Update(leaveRequest);
             _unitOfWork.Complete();

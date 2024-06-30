@@ -11,7 +11,7 @@ namespace EcommerceDomain.LeaveRequests
         public int Id { get; set; }
         [ForeignKey("RequestingEmployeeId")]
         public Employee RequestingEmployee { get; set; }
-        public string RequestingEmployeeId { get; set; }
+        public int RequestingEmployeeId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         [ForeignKey("LeaveTypeId")]
@@ -24,6 +24,6 @@ namespace EcommerceDomain.LeaveRequests
         public bool Cancelled { get; set; }
         [ForeignKey("ApprovedById")]
         public Employee ApprovedBy { get; set; }
-        public string ApprovedById { get; set; }
+        public int ApprovedById { get; set; }
     }
 }

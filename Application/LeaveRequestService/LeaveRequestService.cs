@@ -12,7 +12,7 @@ public class LeaveRequestServiceService : ILeaveRequestService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IEmailSender _emailSender;
-    
+
     public LeaveRequestServiceService(IUnitOfWork unitOfWork, IEmailSender emailSender)
     {
         _unitOfWork = unitOfWork;
@@ -25,20 +25,33 @@ public class LeaveRequestServiceService : ILeaveRequestService
             .GetById(x => x.Id == leaveRequestDTO.employeeId)
             .FirstOrDefault();
 
+        if (employee == null)
+            throw new Exception("Employee doesnt exist");
+
+
+
         var leaveType = _unitOfWork.Repository<LeaveType>()
             .GetById(x => x.Id == leaveRequestDTO.leaveTypeId);
+
+        if (leaveType == null)
+            throw new Exception("LeaveType doesnt exist");
+
+
 
         var allocation = _unitOfWork.Repository<LeaveAllocation>()
             .GetByCondition(x => x.EmployeeId == leaveRequestDTO.employeeId && x.LeaveTypeId == leaveRequestDTO.leaveTypeId)
             .FirstOrDefault();
 
-        if (allocation == null || allocation.NumberOfDays < (leaveRequestDTO.endDate - leaveRequestDTO.startDate).Days)
+        if (allocation == null || allocation.NumberOfDays < (leaveRequestDTO.endDate - leaveRequestDTO.startDate).Days + 1)
             throw new Exception("Insufficient Leave Days");
+
+
+
 
         var daysOff = (leaveRequestDTO.endDate - leaveRequestDTO.startDate).Days;
 
         allocation.NumberOfDays -= daysOff;
-        
+
         var leaveRequest = new EcommerceDomain.LeaveRequests.LeaveRequest
         {
             RequestingEmployeeId = leaveRequestDTO.employeeId,
@@ -47,31 +60,37 @@ public class LeaveRequestServiceService : ILeaveRequestService
             EndDate = leaveRequestDTO.endDate,
             DateRequested = DateTime.Now,
             RequestComments = leaveRequestDTO.requestComments,
-            Cancelled = false // maybe i should change
+            Cancelled = false
         };
-        
-        //add background job
-        
+
+
         _unitOfWork.Repository<LeaveRequest>().Create(leaveRequest);
         _unitOfWork.Complete();
 
+        //var lead = _unitOfWork.Repository<Employee>().Equals(employee.ReportsTo)
 
-        var lead = _unitOfWork.Repository<Employee>().Equals(employee.ReportsTo);
+        //if (lead != null)
+        //{
+        //    var emailBody = $"{employee.Firstname} {employee.Lastname} " +
+        //                    $"has requested {daysOff} days off from " +
+        //                    $"{leaveRequestDTO.startDate.ToShortDateString()} to " +
+        //                    $"{leaveRequestDTO.endDate.ToShortDateString()}.";
 
-        if (lead != null)
-        {
-            var emailBody = $"{employee.Firstname} {employee.Lastname} " +
-                            $"has requested {daysOff} days off from " +
-                            $"{leaveRequestDTO.startDate.ToShortDateString()} to " +
-                            $"{leaveRequestDTO.endDate.ToShortDateString()}.";
-            //await _emailService.SendEmailAsync(lead.Email, "Leave Request", emailBody);
-            
-           // _emailSender.Send(lead.Email, "Leave Request", emailBody);
-        }
+        //    _emailSender.Send(lead.Email, "Leave Request", emailBody);
+        //}
     }
 
     public IEnumerable<LeaveRequest> GetLeaveRequests()
     {
         return _unitOfWork.Repository<LeaveRequest>().GetAll();
+    }
+
+    public IEnumerable<LeaveRequest> GetUserLeaveRequests(int employeeId)
+    {
+        var LeaveRequests = _unitOfWork.Repository<LeaveRequest>()
+            .GetById(x => x.RequestingEmployeeId == employeeId)
+            .ToList();
+
+        return LeaveRequests;
     }
 }

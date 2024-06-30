@@ -4,32 +4,49 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace EcommercePersistence.Migrations
 {
     /// <inheritdoc />
-    public partial class neqwedqsd : Migration
+    public partial class @new : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_LeaveType",
-                table: "LeaveType");
+            migrationBuilder.CreateTable(
+                name: "Employees",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Firstname = table.Column<string>(type: "text", nullable: true),
+                    Lastname = table.Column<string>(type: "text", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    Position = table.Column<string>(type: "text", nullable: true),
+                    ReportsTo = table.Column<string>(type: "text", nullable: true),
+                    DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateJoined = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employees", x => x.Id);
+                });
 
-            migrationBuilder.RenameTable(
-                name: "LeaveType",
-                newName: "LeaveTypes");
-
-            migrationBuilder.AddColumn<string>(
-                name: "Email",
-                table: "Employees",
-                type: "text",
-                nullable: true);
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_LeaveTypes",
-                table: "LeaveTypes",
-                column: "Id");
+            migrationBuilder.CreateTable(
+                name: "LeaveTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    DefaultDays = table.Column<int>(type: "integer", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LeaveTypes", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "LeaveAllocations",
@@ -39,7 +56,7 @@ namespace EcommercePersistence.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     NumberOfDays = table.Column<int>(type: "integer", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EmployeeId = table.Column<string>(type: "text", nullable: true),
+                    EmployeeId = table.Column<int>(type: "integer", nullable: false),
                     LeaveTypeId = table.Column<int>(type: "integer", nullable: false),
                     Period = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -50,7 +67,8 @@ namespace EcommercePersistence.Migrations
                         name: "FK_LeaveAllocations_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_LeaveAllocations_LeaveTypes_LeaveTypeId",
                         column: x => x.LeaveTypeId,
@@ -65,7 +83,7 @@ namespace EcommercePersistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RequestingEmployeeId = table.Column<string>(type: "text", nullable: true),
+                    RequestingEmployeeId = table.Column<int>(type: "integer", nullable: false),
                     StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     LeaveTypeId = table.Column<int>(type: "integer", nullable: false),
@@ -74,7 +92,7 @@ namespace EcommercePersistence.Migrations
                     DateActioned = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Approved = table.Column<bool>(type: "boolean", nullable: true),
                     Cancelled = table.Column<bool>(type: "boolean", nullable: false),
-                    ApprovedById = table.Column<string>(type: "text", nullable: true)
+                    ApprovedById = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -83,12 +101,14 @@ namespace EcommercePersistence.Migrations
                         name: "FK_LeaveRequests_Employees_ApprovedById",
                         column: x => x.ApprovedById,
                         principalTable: "Employees",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_LeaveRequests_Employees_RequestingEmployeeId",
                         column: x => x.RequestingEmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_LeaveRequests_LeaveTypes_LeaveTypeId",
                         column: x => x.LeaveTypeId,
@@ -97,47 +117,25 @@ namespace EcommercePersistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.UpdateData(
+            migrationBuilder.InsertData(
                 table: "Employees",
-                keyColumn: "Id",
-                keyValue: "1",
-                column: "Email",
-                value: null);
+                columns: new[] { "Id", "DateJoined", "DateOfBirth", "Email", "Firstname", "Lastname", "Position", "ReportsTo" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2010, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(1990, 2, 2, 0, 0, 0, 0, DateTimeKind.Utc), null, "John", "Doe", "Manager", null },
+                    { 2, new DateTime(2015, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(1990, 2, 2, 0, 0, 0, 0, DateTimeKind.Utc), null, "Jane", "Smith", "Developer", "1" }
+                });
 
-            migrationBuilder.UpdateData(
-                table: "Employees",
-                keyColumn: "Id",
-                keyValue: "2",
-                column: "Email",
-                value: null);
-
-            migrationBuilder.UpdateData(
+            migrationBuilder.InsertData(
                 table: "LeaveTypes",
-                keyColumn: "Id",
-                keyValue: 1,
-                column: "DateCreated",
-                value: new DateTime(2024, 6, 26, 22, 7, 16, 350, DateTimeKind.Utc).AddTicks(6960));
-
-            migrationBuilder.UpdateData(
-                table: "LeaveTypes",
-                keyColumn: "Id",
-                keyValue: 2,
-                column: "DateCreated",
-                value: new DateTime(2024, 6, 26, 22, 7, 16, 350, DateTimeKind.Utc).AddTicks(6960));
-
-            migrationBuilder.UpdateData(
-                table: "LeaveTypes",
-                keyColumn: "Id",
-                keyValue: 3,
-                column: "DateCreated",
-                value: new DateTime(2024, 6, 26, 22, 7, 16, 350, DateTimeKind.Utc).AddTicks(6970));
-
-            migrationBuilder.UpdateData(
-                table: "LeaveTypes",
-                keyColumn: "Id",
-                keyValue: 4,
-                column: "DateCreated",
-                value: new DateTime(2024, 6, 26, 22, 7, 16, 350, DateTimeKind.Utc).AddTicks(6970));
+                columns: new[] { "Id", "DateCreated", "DefaultDays", "Name" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9968), 0, "Annual" },
+                    { 2, new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9969), 20, "Sick" },
+                    { 3, new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9970), 0, "Replacement" },
+                    { 4, new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9971), 10, "Unpaid" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_LeaveAllocations_EmployeeId",
@@ -174,50 +172,11 @@ namespace EcommercePersistence.Migrations
             migrationBuilder.DropTable(
                 name: "LeaveRequests");
 
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_LeaveTypes",
-                table: "LeaveTypes");
+            migrationBuilder.DropTable(
+                name: "Employees");
 
-            migrationBuilder.DropColumn(
-                name: "Email",
-                table: "Employees");
-
-            migrationBuilder.RenameTable(
-                name: "LeaveTypes",
-                newName: "LeaveType");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_LeaveType",
-                table: "LeaveType",
-                column: "Id");
-
-            migrationBuilder.UpdateData(
-                table: "LeaveType",
-                keyColumn: "Id",
-                keyValue: 1,
-                column: "DateCreated",
-                value: new DateTime(2024, 6, 26, 13, 47, 3, 825, DateTimeKind.Utc).AddTicks(220));
-
-            migrationBuilder.UpdateData(
-                table: "LeaveType",
-                keyColumn: "Id",
-                keyValue: 2,
-                column: "DateCreated",
-                value: new DateTime(2024, 6, 26, 13, 47, 3, 825, DateTimeKind.Utc).AddTicks(220));
-
-            migrationBuilder.UpdateData(
-                table: "LeaveType",
-                keyColumn: "Id",
-                keyValue: 3,
-                column: "DateCreated",
-                value: new DateTime(2024, 6, 26, 13, 47, 3, 825, DateTimeKind.Utc).AddTicks(220));
-
-            migrationBuilder.UpdateData(
-                table: "LeaveType",
-                keyColumn: "Id",
-                keyValue: 4,
-                column: "DateCreated",
-                value: new DateTime(2024, 6, 26, 13, 47, 3, 825, DateTimeKind.Utc).AddTicks(220));
+            migrationBuilder.DropTable(
+                name: "LeaveTypes");
         }
     }
 }

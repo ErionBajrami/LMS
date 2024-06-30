@@ -26,6 +26,8 @@ class Program
 
         StartupHelper.HangfireConfiguration(builder.Services, builder.Configuration);
 
+        StartupHelper.services(builder.Services);
+
         builder.Services.AddControllers();
 
         builder.Services.AddEndpointsApiExplorer();

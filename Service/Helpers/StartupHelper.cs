@@ -4,11 +4,13 @@ using System.Security.Claims;
 using System.Text;
 using Hangfire;
 using Hangfire.PostgreSql;
+using EcommerceInfrastructure.Email;
 
 namespace EcommerceService.Helpers
 {
     public static class StartupHelper
     {
+
         public static void RegisterAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAuthentication(options =>
@@ -116,13 +118,18 @@ namespace EcommerceService.Helpers
 
         public static void HangfireConfiguration(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddHangfire(x => x
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseDefaultTypeSerializer()
-                .UsePostgreSqlStorage(configuration.GetConnectionString("DefaultConnection")));
+            services.AddHangfire(config => config
+                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                 .UseSimpleAssemblyNameTypeSerializer()
+                 .UseDefaultTypeSerializer()
+                 .UsePostgreSqlStorage(configuration.GetConnectionString("DefaultConnection")));
 
             services.AddHangfireServer();
+        }
+
+        public static void services(IServiceCollection services)
+        {
+            services.AddTransient<IEmailSender, EmailSender>();
         }
     }
 }
