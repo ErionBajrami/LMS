@@ -12,39 +12,40 @@ public class YearlyJulyReset : IYearlyJulyReset
     {
         _unitOfWork = unitOfWork;
     }
-    
-    public void ResetAllLeaveDays()
-    {
-        var leaveDays = _unitOfWork.Repository<LeaveAllocation>()
-            .GetAll()
-            .ToList();
-
-
-        foreach (var LeaveDays in leaveDays)
-        {
-            LeaveDays.NumberOfDays = 0;
-            _unitOfWork.Repository<LeaveAllocation>().Update(LeaveDays);
-        }
-
-        _unitOfWork.Complete();
-    }
 
     public void ResetAnnualLeaveDays()
     {
-        var leaveType = _unitOfWork.Repository<LeaveType>()
-            .GetByCondition(x => x.Id == 1);
+        // Fetch all leave types
+        var leaveTypes = _unitOfWork.Repository<LeaveType>().GetAll().ToList();
 
-        if (leaveType == null)
-            throw new Exception("Leave type doesnt exist");
+        if (!leaveTypes.Any())
+            throw new Exception("No leave types exist");
 
-
-        var leaveAllocations = _unitOfWork.Repository<LeaveAllocation>()
-            .GetByCondition(x => x.LeaveType == leaveType)
-            .ToList();
+        // Fetch all leave allocations
+        var leaveAllocations = _unitOfWork.Repository<LeaveAllocation>().GetAll().ToList();
 
         foreach (var allocation in leaveAllocations)
         {
-            allocation.NumberOfDays = 0;
+            switch (allocation.LeaveType.Name)
+            {
+                case "Sick":
+                    allocation.NumberOfDays = 20;
+                    break;
+                case "Unpaid":
+                    allocation.NumberOfDays = 10;
+                    break;
+                case "Replacement":
+                    allocation.NumberOfDays = 0;
+                    break;
+                case "Annual":
+                    if (allocation.NumberOfDays > 12)
+                    {
+                        allocation.NumberOfDays = 12;
+                    }
+                    // if 12 days or fewer, they are continued without changes
+                    break;
+            }
+
             _unitOfWork.Repository<LeaveAllocation>().Update(allocation);
         }
 
