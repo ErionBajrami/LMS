@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using LMS.Application.Interfaces;
 using LMS.Domain.Employees;
 using LMS.Persistence.Employees;
+using EcommerceDomain.Holiday;
 
 
 namespace EcommercePersistence
@@ -25,6 +26,7 @@ namespace EcommercePersistence
         public DbSet<LeaveRequest> LeaveRequests { get; set; }
         public DbSet<LeaveType> LeaveTypes { get; set; }
         public DbSet<LeaveAllocation> LeaveAllocations { get; set; }
+        public DbSet<Holiday> Holidays { get; set; }
 
         public void Save()
         {

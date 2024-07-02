@@ -15,13 +15,10 @@ public class YearlyJulyReset : IYearlyJulyReset
 
     public void ResetAnnualLeaveDays()
     {
-        // Fetch all leave types
         var leaveTypes = _unitOfWork.Repository<LeaveType>().GetAll().ToList();
 
         if (!leaveTypes.Any())
             throw new Exception("No leave types exist");
-
-        // Fetch all leave allocations
         var leaveAllocations = _unitOfWork.Repository<LeaveAllocation>().GetAll().ToList();
 
         foreach (var allocation in leaveAllocations)
@@ -42,7 +39,6 @@ public class YearlyJulyReset : IYearlyJulyReset
                     {
                         allocation.NumberOfDays = 12;
                     }
-                    // if 12 days or fewer, they are continued without changes
                     break;
             }
 

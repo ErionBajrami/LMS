@@ -4,7 +4,7 @@ using Hangfire;
 
 namespace EcommerceService.Helpers;
 
-public class Jobs
+public static class Jobs
 {
     public static void RecurringJobs()
     {

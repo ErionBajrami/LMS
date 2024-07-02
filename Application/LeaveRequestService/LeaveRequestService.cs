@@ -1,5 +1,6 @@
 using Castle.Core.Smtp;
 using EcommerceApplication.CreateLeaveRequest;
+using EcommerceDomain.Holiday;
 using EcommerceDomain.LeaveAllovations;
 using EcommerceDomain.LeaveRequests;
 using EcommerceDomain.LeaveTypes;
@@ -38,19 +39,26 @@ public class LeaveRequestServiceService : ILeaveRequestService
 
 
 
+        var totalDays = (leaveRequestDTO.endDate - leaveRequestDTO.startDate).Days + 1;
+
+        var holidays = _unitOfWork.Repository<Holiday>()
+            .GetByCondition(x => x.Date >= leaveRequestDTO.startDate && x.Date <= leaveRequestDTO.endDate)
+            .Select(x => x.Date)
+            .ToList();
+
+        var actualLeaveDays = HelperMethods.CalculateLeaveDaysExcludingHolidays(leaveRequestDTO.startDate, leaveRequestDTO.endDate, holidays);
+
+
         var allocation = _unitOfWork.Repository<LeaveAllocation>()
             .GetByCondition(x => x.EmployeeId == leaveRequestDTO.employeeId && x.LeaveTypeId == leaveRequestDTO.leaveTypeId)
             .FirstOrDefault();
 
-        if (allocation == null || allocation.NumberOfDays < (leaveRequestDTO.endDate - leaveRequestDTO.startDate).Days + 1)
+        if (allocation == null || allocation.NumberOfDays < actualLeaveDays)
             throw new Exception("Insufficient Leave Days");
 
 
 
-
-        var daysOff = (leaveRequestDTO.endDate - leaveRequestDTO.startDate).Days;
-
-        allocation.NumberOfDays -= daysOff;
+        allocation.NumberOfDays -= actualLeaveDays;
 
         var leaveRequest = new EcommerceDomain.LeaveRequests.LeaveRequest
         {
@@ -67,12 +75,12 @@ public class LeaveRequestServiceService : ILeaveRequestService
         _unitOfWork.Repository<LeaveRequest>().Create(leaveRequest);
         _unitOfWork.Complete();
 
-        var lead = _unitOfWork.Repository<Employee>().Equals(employee.ReportsTo)
+        var lead = _unitOfWork.Repository<Employee>().Equals(employee.ReportsTo);
 
         if (lead != null)
         {
             var emailBody = $"{employee.Firstname} {employee.Lastname} " +
-                            $"has requested {daysOff} days off from " +
+                            $"has requested {actualLeaveDays} days off from " +
                             $"{leaveRequestDTO.startDate.ToShortDateString()} to " +
                             $"{leaveRequestDTO.endDate.ToShortDateString()}.";
 
