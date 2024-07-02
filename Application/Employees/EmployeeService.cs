@@ -17,9 +17,12 @@ namespace EcommerceApplication.Employees
 
         public async Task<List<Employee>> GetAllEmployees()
         {
-            var customersList = await _unitOfWork.Repository<Employee>().GetAll().ToListAsync();
+            return await _unitOfWork.Repository<Employee>().GetAll().ToListAsync();
+        }
 
-            return customersList;
+        public async Task<Employee> GetEmployeeById(int id)
+        {
+            return await _unitOfWork.Repository<Employee>().GetById(id).FirstOrDefaultAsync();
         }
 
         public async Task CreateEmployee(EmployeeCreateDto employeeCreateDto)
