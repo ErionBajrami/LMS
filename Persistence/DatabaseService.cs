@@ -35,7 +35,7 @@ namespace EcommercePersistence
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+           var connectionString = _configuration.GetConnectionString("DefaultConnection");
 
             optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=LifeLmss;Username=postgres;Password=postgres;Include Error Detail=true");
         }

@@ -12,7 +12,7 @@ namespace EcommerceApplication.Employees
         public string Lastname { get; set; }
         public string Email { get; set; }
         public string Position { get; set; }
-        public string ReportsTo { get; set; }
+        public int ReportsTo { get; set; }
         public DateTime DateOfBirth { get; set; }
         public DateTime DateJoined { get; set; }
     }

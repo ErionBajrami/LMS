@@ -14,7 +14,7 @@ public static class DataSeeder
                 Firstname = "John",
                 Lastname = "Doe",
                 Position = "HR",
-                ReportsTo = null,
+                ReportsTo = 0,
                 DateOfBirth = DateTime.SpecifyKind(new DateTime(1990, 2, 2), DateTimeKind.Utc),
                 DateJoined = DateTime.SpecifyKind(new DateTime(2010, 5, 1), DateTimeKind.Utc)
             },
@@ -24,7 +24,7 @@ public static class DataSeeder
                 Firstname = "Jane",
                 Lastname = "Smith",
                 Position = "Developer",
-                ReportsTo = "3",
+                ReportsTo = 3,
                 DateOfBirth = DateTime.SpecifyKind(new DateTime(1990, 2, 2), DateTimeKind.Utc),
                 DateJoined = DateTime.SpecifyKind(new DateTime(2015, 6, 15), DateTimeKind.Utc)
             },
@@ -34,7 +34,7 @@ public static class DataSeeder
                  Firstname = "Jane",
                  Lastname = "Smith",
                  Position = "Lead",
-                 ReportsTo = "1",
+                 ReportsTo = 1,
                  DateOfBirth = DateTime.SpecifyKind(new DateTime(1555, 2, 2), DateTimeKind.Utc),
                  DateJoined = DateTime.SpecifyKind(new DateTime(2000, 6, 15), DateTimeKind.Utc)
              }

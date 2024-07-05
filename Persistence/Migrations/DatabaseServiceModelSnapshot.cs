@@ -22,6 +22,25 @@ namespace EcommercePersistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("EcommerceDomain.Holiday.Holiday", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Holidays");
+                });
+
             modelBuilder.Entity("EcommerceDomain.LeaveAllovations.LeaveAllocation", b =>
                 {
                     b.Property<int>("Id")
@@ -128,28 +147,28 @@ namespace EcommercePersistence.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9968),
+                            DateCreated = new DateTime(2024, 7, 5, 17, 4, 14, 608, DateTimeKind.Utc).AddTicks(8792),
                             DefaultDays = 0,
                             Name = "Annual"
                         },
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9969),
+                            DateCreated = new DateTime(2024, 7, 5, 17, 4, 14, 608, DateTimeKind.Utc).AddTicks(8794),
                             DefaultDays = 20,
                             Name = "Sick"
                         },
                         new
                         {
                             Id = 3,
-                            DateCreated = new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9970),
+                            DateCreated = new DateTime(2024, 7, 5, 17, 4, 14, 608, DateTimeKind.Utc).AddTicks(8795),
                             DefaultDays = 0,
                             Name = "Replacement"
                         },
                         new
                         {
                             Id = 4,
-                            DateCreated = new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9971),
+                            DateCreated = new DateTime(2024, 7, 5, 17, 4, 14, 608, DateTimeKind.Utc).AddTicks(8795),
                             DefaultDays = 10,
                             Name = "Unpaid"
                         });
@@ -181,8 +200,8 @@ namespace EcommercePersistence.Migrations
                     b.Property<string>("Position")
                         .HasColumnType("text");
 
-                    b.Property<string>("ReportsTo")
-                        .HasColumnType("text");
+                    b.Property<int>("ReportsTo")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -196,7 +215,8 @@ namespace EcommercePersistence.Migrations
                             DateOfBirth = new DateTime(1990, 2, 2, 0, 0, 0, 0, DateTimeKind.Utc),
                             Firstname = "John",
                             Lastname = "Doe",
-                            Position = "Manager"
+                            Position = "HR",
+                            ReportsTo = 0
                         },
                         new
                         {
@@ -206,7 +226,17 @@ namespace EcommercePersistence.Migrations
                             Firstname = "Jane",
                             Lastname = "Smith",
                             Position = "Developer",
-                            ReportsTo = "1"
+                            ReportsTo = 3
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DateJoined = new DateTime(2000, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DateOfBirth = new DateTime(1555, 2, 2, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Firstname = "Jane",
+                            Lastname = "Smith",
+                            Position = "Lead",
+                            ReportsTo = 1
                         });
                 });
 

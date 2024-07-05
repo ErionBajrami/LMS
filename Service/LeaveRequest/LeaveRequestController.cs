@@ -9,7 +9,7 @@ namespace EcommerceService.LeaveRequest
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class LeaveRequestController : ControllerBase
     {
         private readonly ILeaveRequestService _leaveRequestService;
@@ -21,7 +21,7 @@ namespace EcommerceService.LeaveRequest
             _leaveRequestApprovalService = leaveRequestApprovalService;
         }
 
-        [Authorize(Roles = "Lead, HR")]
+        //[Authorize(Roles = "Lead, HR")]
         [HttpGet("GetAllLeaveRequests")]
         public IActionResult GetAll()
         { 
@@ -30,7 +30,7 @@ namespace EcommerceService.LeaveRequest
             return Ok(requests);
         }
 
-        [Authorize(Roles = "Employee")]
+        //[Authorize(Roles = "Employee")]
         [HttpGet("GetYourRequests")]
         public IActionResult GetUserRequests(int id)
         {
@@ -41,26 +41,14 @@ namespace EcommerceService.LeaveRequest
 
         [HttpPost("CreateLeaveRequest")]
         public IActionResult CreateRequest(LeaveRequestDTO leaveRequestDTO) 
-        {
-            try
-            {
-                _leaveRequestService.CreateLeaveRequest(leaveRequestDTO);
+       {
 
-                BackgroundJob.Enqueue(() => Console.WriteLine($"{leaveRequestDTO.employeeId} requested days " +
-                    $"{(leaveRequestDTO.endDate - leaveRequestDTO.startDate).Days + 1} off from " +
-                    $"{leaveRequestDTO.startDate.ToShortDateString()} to {leaveRequestDTO.endDate.ToShortDateString()}."));
-
-                return Ok("Leave Request Created");
-            } 
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
-            
+            _leaveRequestService.CreateLeaveRequest(leaveRequestDTO);
+return Ok("Leave Request Created");
         }
 
         [HttpPost("approve")]
-        [Authorize(Roles = "Lead, HR")]
+       // [Authorize(Roles = "Lead, HR")]
         public async Task<IActionResult> ApproveLeaveRequest([FromBody] ApproveLeaveRequestDto dto)
         {
             _leaveRequestApprovalService.ApproveRequest(dto.RequestId, dto.ApproverId);
@@ -69,7 +57,7 @@ namespace EcommerceService.LeaveRequest
 
 
         [HttpPost("cancel")]
-        [Authorize(Roles = "Lead, HR")]
+        //[Authorize(Roles = "Lead, HR")]
         public async Task<IActionResult> CancelLeaveRequest([FromBody] DeclineRequestDTO dto)
         {
             _leaveRequestApprovalService.DeclineRequest(dto.EmployeeId);

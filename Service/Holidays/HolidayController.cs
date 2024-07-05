@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
 public class HolidaysController : ControllerBase
 {
     private readonly IHolidayService _holidayService;
@@ -14,7 +13,7 @@ public class HolidaysController : ControllerBase
         _holidayService = holidayService;
     }
 
-    [HttpGet]
+    [HttpGet("get")]
     public IActionResult GetAllHolidays()
     {
         var holidays = _holidayService.GetAllHolidays();
@@ -35,8 +34,7 @@ public class HolidaysController : ControllerBase
         }
     }
 
-    [HttpPost]
-    [Authorize(Roles = "HR")]
+    [HttpPost("add")]
     public IActionResult AddHoliday([FromBody] HolidayRequestDTO holidayDto)
     {
         _holidayService.AddHoliday(holidayDto);
@@ -44,7 +42,6 @@ public class HolidaysController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = "HR")]
     public IActionResult UpdateHoliday(int id, [FromBody] HolidayRequestDTO holidayDto)
     {
         try
@@ -59,7 +56,6 @@ public class HolidaysController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "HR")]
     public IActionResult DeleteHoliday(int id)
     {
         try

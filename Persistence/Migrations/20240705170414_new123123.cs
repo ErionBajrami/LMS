@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EcommercePersistence.Migrations
 {
     /// <inheritdoc />
-    public partial class @new : Migration
+    public partial class new123123 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,13 +24,27 @@ namespace EcommercePersistence.Migrations
                     Lastname = table.Column<string>(type: "text", nullable: true),
                     Email = table.Column<string>(type: "text", nullable: true),
                     Position = table.Column<string>(type: "text", nullable: true),
-                    ReportsTo = table.Column<string>(type: "text", nullable: true),
+                    ReportsTo = table.Column<int>(type: "integer", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DateJoined = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Employees", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Holidays",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Holidays", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -122,8 +136,9 @@ namespace EcommercePersistence.Migrations
                 columns: new[] { "Id", "DateJoined", "DateOfBirth", "Email", "Firstname", "Lastname", "Position", "ReportsTo" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2010, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(1990, 2, 2, 0, 0, 0, 0, DateTimeKind.Utc), null, "John", "Doe", "Manager", null },
-                    { 2, new DateTime(2015, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(1990, 2, 2, 0, 0, 0, 0, DateTimeKind.Utc), null, "Jane", "Smith", "Developer", "1" }
+                    { 1, new DateTime(2010, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(1990, 2, 2, 0, 0, 0, 0, DateTimeKind.Utc), null, "John", "Doe", "HR", 0 },
+                    { 2, new DateTime(2015, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(1990, 2, 2, 0, 0, 0, 0, DateTimeKind.Utc), null, "Jane", "Smith", "Developer", 3 },
+                    { 3, new DateTime(2000, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(1555, 2, 2, 0, 0, 0, 0, DateTimeKind.Utc), null, "Jane", "Smith", "Lead", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -131,10 +146,10 @@ namespace EcommercePersistence.Migrations
                 columns: new[] { "Id", "DateCreated", "DefaultDays", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9968), 0, "Annual" },
-                    { 2, new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9969), 20, "Sick" },
-                    { 3, new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9970), 0, "Replacement" },
-                    { 4, new DateTime(2024, 6, 30, 22, 11, 22, 67, DateTimeKind.Utc).AddTicks(9971), 10, "Unpaid" }
+                    { 1, new DateTime(2024, 7, 5, 17, 4, 14, 608, DateTimeKind.Utc).AddTicks(8792), 0, "Annual" },
+                    { 2, new DateTime(2024, 7, 5, 17, 4, 14, 608, DateTimeKind.Utc).AddTicks(8794), 20, "Sick" },
+                    { 3, new DateTime(2024, 7, 5, 17, 4, 14, 608, DateTimeKind.Utc).AddTicks(8795), 0, "Replacement" },
+                    { 4, new DateTime(2024, 7, 5, 17, 4, 14, 608, DateTimeKind.Utc).AddTicks(8795), 10, "Unpaid" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -166,6 +181,9 @@ namespace EcommercePersistence.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Holidays");
+
             migrationBuilder.DropTable(
                 name: "LeaveAllocations");
 

@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using Hangfire;
 using Hangfire.PostgreSql;
-using EcommerceInfrastructure.Email;
+//using EcommerceInfrastructure.Email;
 
 namespace EcommerceService.Helpers
 {
@@ -127,9 +127,9 @@ namespace EcommerceService.Helpers
             services.AddHangfireServer();
         }
 
-        public static void services(IServiceCollection services)
-        {
-            services.AddTransient<IEmailSender, EmailSender>();
-        }
+        //public static void services(IServiceCollection services)
+        //{
+        //    services.AddTransient<IEmailSender, EmailSender>();
+        //}
     }
 }

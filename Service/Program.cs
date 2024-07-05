@@ -6,6 +6,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Runtime.Loader;
 using Hangfire;
+using EcommerceApplication.CreateLeaveRequest;
+using EcommerceApplication.LeaveRequestService;
+using Hangfire.PostgreSql;
+using EcommerceApplication.AnnualLeaveService;
+using EcommerceApplication;
+//using EcommerceInfrastructure.Email;
 
 namespace LMS.Service;
 
@@ -24,9 +30,7 @@ class Program
 
         builder.Services.RegisterAuthentication(builder.Configuration);
 
-        StartupHelper.HangfireConfiguration(builder.Services, builder.Configuration);
-
-        StartupHelper.services(builder.Services);
+        
 
         builder.Services.AddControllers();
 
@@ -59,14 +63,29 @@ class Program
             .AddClasses()
             .AsMatchingInterface());
 
+        builder.Services.AddScoped<ILeaveRequestService, LeaveRequestServiceService>();
+        builder.Services.AddScoped<ILeaveRequestApprovalService, LeaveRequestApprovalService>();
+        //builder.Services.AddTransient<IEmailSender, EmailSender>();
+        //StartupHelper.HangfireConfiguration(builder.Services, builder.Configuration);
+
+        //StartupHelper.services(builder.Services);
+
+
+
         builder.Services.AddDbContext<DatabaseService>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        builder.Services.AddHangfire(config => config
+               .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+               .UseSimpleAssemblyNameTypeSerializer()
+               .UseDefaultTypeSerializer()
+               .UsePostgreSqlStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        builder.Services.AddHangfireServer();
 
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         var app = builder.Build();
 
-        Jobs.RecurringJobs();
-        
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -90,7 +109,11 @@ class Program
 
         
         app.UseHangfireDashboard();
-        
+
+        RecurringJob.AddOrUpdate<IYearlyJulyReset>("ResetYearlyAnnualDays", x => x.ResetAnnualLeaveDays(), Cron.Yearly(7, 1));
+
+        RecurringJob.AddOrUpdate<IAnnualLeaveService>("AddAnnualLeaveDays", x => x.UpdateAnnualLeaveMonthly(), Cron.Monthly(1));
+
         app.MapControllers();
 
         app.UseAdvancedDependencyInjection();

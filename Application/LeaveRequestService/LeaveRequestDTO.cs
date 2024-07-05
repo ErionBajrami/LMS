@@ -8,7 +8,7 @@ namespace EcommerceApplication.LeaveRequestService
 {
     public class LeaveRequestDTO
     {
-        public int employeeId { get; set; }
+        public int RequestingEmployeeId { get; set; }
         public int leaveTypeId { get; set; }
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; }
